@@ -6,45 +6,38 @@ menus.forEach((menu) =>
   menu.addEventListener("click", (event) => getNewsByCategory(event))  // forEach(배열함수)
 );
 
-const getLatestNews = async () => {
-    const url = new URL(`https://noona-times-be-5ca9402f90d9.herokuapp.com/top-headlines`);
-                        
-    const response = await fetch(url); // fetch로 url 데이터 요청   
-    const data = await response.json();
+let url = new URL(`https://noona-times-be-5ca9402f90d9.herokuapp.com/top-headlines`) 
 
-    newsList = data.articles;
+const getNews = async() => {
+  const response = await fetch(url); // fetch로 url 데이터 요청   
+  const data = await response.json();
+  newsList = data.articles;
+  render();
+}
+
+const getLatestNews = async () => {
+    url = new URL(`https://noona-times-be-5ca9402f90d9.herokuapp.com/top-headlines`);
+                        
+    getNews();
     
-    render(); // newsList가 확정된 다음 써야함
-    console.log("dddd", newsList);
+   // render(); // newsList가 확정된 다음 써야함
 };
 
 const getNewsByCategory = async (event) => {
 
     const category = event.target.textContent.toLowerCase();
-    console.log("category", category);
-    const url = new URL(`https://noona-times-be-5ca9402f90d9.herokuapp.com/top-headlines?category=${category}`);
-
-    const response = await fetch(url);
-    const data = await response.json();
-    console.log("dd", data);
-    newsList = data.articles;
-    render();
+    url = new URL(`https://noona-times-be-5ca9402f90d9.herokuapp.com/top-headlines?category=${category}`);
+      getNews();
 
 }
 
 const getNewsByKeyword = async() => {
 
   const keyword = document.getElementById("search-input").value
-  console.log("keyword",keyword);
-
-  const url = new URL(`https://noona-times-be-5ca9402f90d9.herokuapp.com/top-headlines?q=${keyword}`);
+  
+  url = new URL(`https://noona-times-be-5ca9402f90d9.herokuapp.com/top-headlines?q=${keyword}`);
   // `https://newsapi.org/v2/top-headlines?country=us&q=${keyword}&apiKey=${API_KEY}` 
-  const response = await fetch(url);
-  const data = await response.json();
-  console.log("keyword data", data);
-
-  newsList = data.articles;
-  render(); // render는 newsList를 보여줌
+      getNews();
 
 }
 
