@@ -6,13 +6,38 @@ menus.forEach((menu) =>
   menu.addEventListener("click", (event) => getNewsByCategory(event))  // forEach(배열함수)
 );
 
-let url = new URL(`https://noona-times-be-5ca9402f90d9.herokuapp.com/top-headlines`) 
+let url = new URL(`https://noona-times-be-5ca9402f90d9.herokuapp.com/top-headlines`);
+
+let totalResults = 0 
+let page = 1
+const pageSize = 10
+const groupSize = 5
 
 const getNews = async() => {
-  const response = await fetch(url); // fetch로 url 데이터 요청   
-  const data = await response.json();
-  newsList = data.articles;
-  render();
+
+  try {
+    const response = await fetch(url); // fetch로 url 데이터 요청  
+    const data = await response.json();
+    console.log("Ddd",data);
+
+    if (response.status == 200){
+      if(data.articles.length === 0){
+        throw new Error("No result for this search") // 검색 결과 없을 경우
+      }
+      newsList = data.articles;
+      totalResults = data.totalResults;
+      render();
+      paginationRender();
+    }
+    else{
+      throw new Error(data.message);
+    }
+    
+  } catch (error) {
+      errorRender(error.message); // errorRender 함수를 호출할때마다 error.message를 매개변수로 보내줌 
+  }
+  
+  
 }
 
 const getLatestNews = async () => {
@@ -63,6 +88,49 @@ const render = () => {
 
     document.getElementById("news-board").innerHTML = newsHTML;
     // 어디에 뉴스들을 붙여야 하는지
+}
+
+const errorRender = (errorMessage) => { // 매개변수 errorMessage를 받아옴
+  const errorHTML = `<div class="alert alert-danger" role="alert"> 
+    ${errorMessage}
+  </div>`; // js이기 때문에 HTML에 넣어줘야함
+  document.getElementById("news-board").innerHTML = errorHTML;
+}
+
+const paginationRender = () => {
+    // totalResult
+    // page(내가 속한 페이지)
+    // pageSize
+    // groupSize(pagination을 몇 개씩 보여주는지)
+
+
+    // pageGroup(내가 몇 번째 그룹에 속해있는지)
+    const pageGroup = Math.ceil(page/groupSize); // 올림
+    // lastPage
+    const lastPage = pageGroup * groupSize;
+    // firstPage
+    const firstPage = lastPage - (groupSize - 1);
+
+    let paginationHTML = ``
+
+    for(let i = firstPage; i <= lastPage ; i++){
+      paginationHTML += `<li class="page-item"><a class="page-link" href="#">${i}</a></li>`
+    }
+
+    document.querySelector(".pagination").innerHTML = paginationHTML;
+
+  //   <nav aria-label="Page navigation example">
+  //    <ul class="pagination">
+  //     <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+  //     <li class="page-item"><a class="page-link" href="#">1</a></li>
+  //     <li class="page-item"><a class="page-link" href="#">2</a></li>
+  //     <li class="page-item"><a class="page-link" href="#">3</a></li>
+  //     <li class="page-item"><a class="page-link" href="#">Next</a></li>
+  //   </ul>
+  //  </nav>
+
+
+    // totalPages
 }
 
 getLatestNews();
