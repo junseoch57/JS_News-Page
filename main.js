@@ -13,10 +13,18 @@ let page = 1
 const pageSize = 10
 const groupSize = 5
 
-const getNews = async() => {
+
+const getNews = async() => { // getNews : 뉴스를 다시 가져옴
 
   try {
+    // url을 호출하기 전에 붙인 다음에 호출을 해야함
+
+    // 받는 url 뒤에다 page,pageSize를 더 붙이고 fetch를 함
+    url.searchParams.set("page",page) // &page = page   
+    url.searchParams.set("pageSize",pageSize) 
+
     const response = await fetch(url); // fetch로 url 데이터 요청  
+
     const data = await response.json();
     console.log("Ddd",data);
 
@@ -103,21 +111,33 @@ const paginationRender = () => {
     // pageSize
     // groupSize(pagination을 몇 개씩 보여주는지)
 
+    // totalPages
+    totalPages = Math.ceil(totalResults / pageSize);
 
     // pageGroup(내가 몇 번째 그룹에 속해있는지)
     const pageGroup = Math.ceil(page/groupSize); // 올림
     // lastPage
     const lastPage = pageGroup * groupSize;
+    // 마지막 페이지그룹이 그룹사이즈보다 작다? lastPage = totalPage
+    if(lastPage > totalPages){
+      lastPage = totalPages;
+    }
+
     // firstPage
-    const firstPage = lastPage - (groupSize - 1);
+    const firstPage = lastPage - (groupSize - 1) <= 0 ? 1 : lastPage - (groupSize - 1);
 
     let paginationHTML = ``
 
     for(let i = firstPage; i <= lastPage ; i++){
-      paginationHTML += `<li class="page-item"><a class="page-link" href="#">${i}</a></li>`
-    }
+      paginationHTML += `<li class="page-item ${i === page ? "active" : ""}  "onclick = "moveToPage(${i})"><a class="page-link">${i}</a></li>`
+    } // i 값 전달
 
-    document.querySelector(".pagination").innerHTML = paginationHTML;
+
+    document.querySelector(".pagination").innerHTML = paginationHTML = `<li class="page-item ${page === 1 ? "disabled" : ""}">
+    <a class = "page-link" onclick = "moveToPreviousPage()"> < </a></li>  
+    ${paginationHTML}
+    <li class="page-item ${page === totalPages ? "disabled" : ""}">
+    <a class = "page-link" onclick = "moveToNextPage()"> > </a></li>`
 
   //   <nav aria-label="Page navigation example">
   //    <ul class="pagination">
@@ -129,9 +149,29 @@ const paginationRender = () => {
   //   </ul>
   //  </nav>
 
-
-    // totalPages
 }
+
+const moveToPage = (pageNum) => {  // 보낸 i를 pageNum로 받음
+  console.log("move", pageNum);
+  page = pageNum;
+  getNews();  // getNews에 pageNum의 정보를 같이 줘야함
+
+}
+
+const moveToNextPage = () => {
+  if (page < totalResults){
+    page = page + 1;
+    getNews();
+  }
+}
+
+const moveToPreviousPage = () => {
+  if(page > 1) { 
+    page = page - 1; 
+    getNews();
+  }
+}
+
 
 getLatestNews();
 
