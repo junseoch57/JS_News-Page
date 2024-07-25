@@ -13,7 +13,6 @@ let page = 1
 const pageSize = 10
 const groupSize = 5
 
-
 const getNews = async() => { // getNews : 뉴스를 다시 가져옴
 
   try {
@@ -112,7 +111,7 @@ const paginationRender = () => {
     // groupSize(pagination을 몇 개씩 보여주는지)
 
     // totalPages
-    totalPages = Math.ceil(totalResults / pageSize);
+    const totalPages = Math.ceil(totalResults / pageSize);
 
     // pageGroup(내가 몇 번째 그룹에 속해있는지)
     const pageGroup = Math.ceil(page/groupSize); // 올림
@@ -133,11 +132,12 @@ const paginationRender = () => {
     } // i 값 전달
 
 
-    document.querySelector(".pagination").innerHTML = paginationHTML = `<li class="page-item ${page === 1 ? "disabled" : ""}">
-    <a class = "page-link" onclick = "moveToPreviousPage()"> < </a></li>  
+    document.querySelector(".pagination").innerHTML = paginationHTML = `
+    <li class="page-item ${page === 1 ? "disabled" : ""}"><a class = "page-link" onclick = "moveToPage(1)">&lt;&lt;</a></li>
+    <li class="page-item ${page === 1 ? "disabled" : ""}"><a class = "page-link" onclick = "moveToPreviousPage()">&lt;</a></li>  
     ${paginationHTML}
-    <li class="page-item ${page === totalPages ? "disabled" : ""}">
-    <a class = "page-link" onclick = "moveToNextPage()"> > </a></li>`
+    <li class="page-item ${page === totalPages ? "disabled" : ""}"><a class = "page-link" onclick = "moveToNextPage()">&gt;</a></li>
+    <li class="page-item ${page === totalPages ? "disabled" : ""}"><a class = "page-link" onclick = "moveToPage(${totalPages})">&gt;&gt;</a></li>`
 
   //   <nav aria-label="Page navigation example">
   //    <ul class="pagination">
@@ -159,6 +159,7 @@ const moveToPage = (pageNum) => {  // 보낸 i를 pageNum로 받음
 }
 
 const moveToNextPage = () => {
+  const totalPages =  Math.ceil(totalResults / pageSize);
   if (page < totalResults){
     page = page + 1;
     getNews();
