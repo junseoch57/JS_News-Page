@@ -1,6 +1,8 @@
 // const API_KEY = `696e0d245c8c4603ab6d3a1b5a332335`; 원래 api키
 
 let newsList = [];
+let currentLanguage = 'ko';
+
 const menus = document.querySelectorAll(".menus button");
 menus.forEach((menu) =>
   menu.addEventListener("click", (event) => getNewsByCategory(event))  // forEach(배열함수)
@@ -19,8 +21,9 @@ const getNews = async() => { // getNews : 뉴스를 다시 가져옴
     // url을 호출하기 전에 붙인 다음에 호출을 해야함
 
     // 받는 url 뒤에다 page,pageSize를 더 붙이고 fetch를 함
-    url.searchParams.set("page",page) // &page = page   
-    url.searchParams.set("pageSize",pageSize) 
+    url.searchParams.set("page",page); // &page = page   
+    url.searchParams.set("pageSize",pageSize);
+    url.searchParams.set("language", currentLanguage);
 
     const response = await fetch(url); // fetch로 url 데이터 요청  
 
@@ -173,6 +176,10 @@ const moveToPreviousPage = () => {
   }
 }
 
+const changeLanguage = async (language) => {
+  currentLanguage = language;
+  await getNews();
+}
 
 getLatestNews();
 
